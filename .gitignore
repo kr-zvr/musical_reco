@@ -1,0 +1,19 @@
+# Credenciales
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Respaldos de editores (como el libreria.pl~ de su repo)
+*~
+*.bak
+
+# Sistema
+.DS_Store
+Thumbs.db
