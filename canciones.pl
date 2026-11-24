@@ -1,5 +1,34 @@
-% Generado por generar_catalogo.py.
-% cancion/8, fuente/3, datos_spotify/4 y contraste_lastfm/3.
+% Base de conocimiento musical con 82 canciones.
+% Carga directa en SWI-Prolog con [canciones].
+%
+% Consultas de ejemplo
+% ?- cancion(_, Titulo, 'The Bugambilias', Genero, Cuadrante, Energia, Idioma, _).
+% ?- recomendar(nostalgico, baja, acompanar, descansar, espanol, Recomendaciones).
+% ?- recomendar(enojado, alta, acompanar, viaje, espanol, Recomendaciones).
+% ?- run_tests.
+%
+% Las canciones se clasifican por valencia y activación según Russell.
+% Referencia https://doi.org/10.1037/h0077714
+% Las dos pistas de The Bugambilias tienen etiquetas editoriales.
+% El cuadrante melancólico de Magenta es provisional.
+
+:- encoding(utf8).
+:- module(canciones, [
+    cancion/8,
+    fuente/3,
+    datos_spotify/4,
+    contraste_lastfm/3,
+    perfil_valido/5,
+    cuadrante_objetivo/4,
+    recomendar/6,
+    recomendar_json/6
+]).
+
+:- use_module(library(http/json)).
+:- use_module(library(pairs)).
+:- use_module(library(plunit)).
+
+% cancion(Id, Titulo, Artista, Genero, Cuadrante, Energia, Idioma, URL).
 cancion('0EpdLuptraYGFZ6J7HNSLc', 'LAS 12', 'Ana Mena / Belinda', 'pop', feliz, alta, espanol, 'https://open.spotify.com/track/0EpdLuptraYGFZ6J7HNSLc').
 cancion('5kVZxyMY1gfdCLiChsfjn1', 'Yo No Soy Celoso', 'Bad Bunny', 'latino', feliz, alta, espanol, 'https://open.spotify.com/track/5kVZxyMY1gfdCLiChsfjn1').
 cancion('1ri9ZUkBJVFUdgwzCnfcYs', 'MAMIII', 'Becky G / KAROL G', 'reggae', feliz, alta, espanol, 'https://open.spotify.com/track/1ri9ZUkBJVFUdgwzCnfcYs').
@@ -83,6 +112,7 @@ cancion('22QiTJqDn1BIRSh4mkNJ5w', 'Cherish the Day', 'Sade', 'soul', tranquilo, 
 cancion('5By7Pzgl6TMuVJG168VWzS', 'Michelle - Remastered 2009', 'The Beatles', 'british', tranquilo, baja, ingles, 'https://open.spotify.com/track/5By7Pzgl6TMuVJG168VWzS').
 cancion('745H5CctFr12Mo7cqa1BMH', 'My Girl', 'The Temptations', 'soul', tranquilo, baja, ingles, 'https://open.spotify.com/track/745H5CctFr12Mo7cqa1BMH').
 
+% fuente(Id, Tipo, URL).
 fuente('0EpdLuptraYGFZ6J7HNSLc', spotify_dataset, 'https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/blob/635b034f69257814eff850a5c2b3346fe458134f/dataset.csv').
 fuente('5kVZxyMY1gfdCLiChsfjn1', spotify_dataset, 'https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/blob/635b034f69257814eff850a5c2b3346fe458134f/dataset.csv').
 fuente('1ri9ZUkBJVFUdgwzCnfcYs', spotify_dataset, 'https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/blob/635b034f69257814eff850a5c2b3346fe458134f/dataset.csv').
@@ -166,6 +196,7 @@ fuente('22QiTJqDn1BIRSh4mkNJ5w', spotify_dataset, 'https://huggingface.co/datase
 fuente('5By7Pzgl6TMuVJG168VWzS', spotify_dataset, 'https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/blob/635b034f69257814eff850a5c2b3346fe458134f/dataset.csv').
 fuente('745H5CctFr12Mo7cqa1BMH', spotify_dataset, 'https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset/blob/635b034f69257814eff850a5c2b3346fe458134f/dataset.csv').
 
+% datos_spotify(Id, Energia, Valencia, Popularidad).
 datos_spotify('0EpdLuptraYGFZ6J7HNSLc', 0.814, 0.728, 79).
 datos_spotify('5kVZxyMY1gfdCLiChsfjn1', 0.588, 0.93, 85).
 datos_spotify('1ri9ZUkBJVFUdgwzCnfcYs', 0.7, 0.899, 85).
@@ -247,6 +278,7 @@ datos_spotify('22QiTJqDn1BIRSh4mkNJ5w', 0.389, 0.68, 60).
 datos_spotify('5By7Pzgl6TMuVJG168VWzS', 0.29, 0.666, 66).
 datos_spotify('745H5CctFr12Mo7cqa1BMH', 0.418, 0.694, 79).
 
+% contraste_lastfm(Id, Evidencia, URL).
 contraste_lastfm('228BxWXUYQPJrJYHDLOHkj', 'dance', 'https://www.last.fm/music/Daddy%20Yankee/_/Gasolina').
 contraste_lastfm('0GjEhVFGZW8afUYGChu3Rr', 'ficha', 'https://www.last.fm/music/Various%2BArtists/Gl%C3%BCckslieder%2B-%2BSongs%2Bdie%2Bgl%C3%BCcklich%2Bmachen').
 contraste_lastfm('721Lxh9pNJJhNERON4Zjmw', 'ficha', 'https://www.last.fm/music/Natalia%2BLacunza%2B%26%2BGuitarricadelafuente').
@@ -256,3 +288,231 @@ contraste_lastfm('0hVHUbZZNeRWw6a2gT1SvE', 'angry', 'https://www.last.fm/tag/ang
 contraste_lastfm('0M955bMOoilikPXwKLYpoi', 'angry', 'https://www.last.fm/tag/angry/tracks').
 contraste_lastfm('5omgFpiMt1CGHjQGfkwzvz', 'ficha', 'https://www.last.fm/music/Jarabe%2Bde%2BPalo').
 contraste_lastfm('22QiTJqDn1BIRSh4mkNJ5w', 'chillout', 'https://www.last.fm/tag/chillout/tracks').
+
+% estado(Ánimo declarado, Valencia, Activación habitual).
+estado(feliz, positiva, alta).
+estado(tranquilo, positiva, baja).
+estado(triste, negativa, baja).
+estado(nostalgico, negativa, baja).
+estado(estresado, negativa, alta).
+estado(enojado, negativa, alta).
+
+cuadrante(positiva, alta, feliz).
+cuadrante(positiva, baja, tranquilo).
+cuadrante(negativa, baja, melancolico).
+cuadrante(negativa, alta, tenso).
+
+cambio(feliz, tranquilo).
+cambio(tranquilo, feliz).
+cambio(triste, feliz).
+cambio(nostalgico, feliz).
+cambio(estresado, tranquilo).
+cambio(enojado, tranquilo).
+
+energia_usuario(baja, 0.25).
+energia_usuario(media, 0.50).
+energia_usuario(alta, 0.75).
+
+energia_actividad(estudio_trabajo, 0.30).
+energia_actividad(ejercicio, 0.85).
+energia_actividad(viaje, 0.55).
+energia_actividad(descansar, 0.20).
+
+objetivo(acompanar).
+objetivo(cambiar).
+
+preferencia_idioma(espanol).
+preferencia_idioma(ingles).
+preferencia_idioma(ambos).
+
+% Reglas de recomendación
+perfil_valido(Animo, Energia, Objetivo, Actividad, Idioma) :-
+    estado(Animo, _, _),
+    energia_usuario(Energia, _),
+    objetivo(Objetivo),
+    energia_actividad(Actividad, _),
+    preferencia_idioma(Idioma).
+
+cuadrante_objetivo(Animo, Energia, acompanar, Cuadrante) :-
+    estado(Animo, Valencia, Habitual),
+    activacion(Energia, Habitual, Activacion),
+    cuadrante(Valencia, Activacion, Cuadrante).
+cuadrante_objetivo(Animo, Energia, cambiar, Cuadrante) :-
+    energia_usuario(Energia, _),
+    cambio(Animo, Cuadrante).
+
+activacion(baja, _, baja).
+activacion(media, Habitual, Habitual).
+activacion(alta, _, alta).
+
+% Las cinco entradas son átomos. El resultado es una lista ordenada de dicts.
+recomendar(Animo, Energia, Objetivo, Actividad, Idioma, Resultados) :-
+    consulta(Animo, Energia, Objetivo, Actividad, Idioma, _, Resultados).
+
+% Adaptador para clientes que reciben el resultado como un átomo JSON.
+recomendar_json(Animo, Energia, Objetivo, Actividad, Idioma, Json) :-
+    consulta(Animo, Energia, Objetivo, Actividad, Idioma, Cuadrante, Resultados),
+    atom_json_dict(Json, _{cuadrante:Cuadrante, recomendaciones:Resultados}, [width(0)]).
+
+consulta(Animo, Energia, Objetivo, Actividad, Idioma, Cuadrante, Resultados) :-
+    ground(perfil(Animo, Energia, Objetivo, Actividad, Idioma)),
+    once(perfil_valido(Animo, Energia, Objetivo, Actividad, Idioma)),
+    once(cuadrante_objetivo(Animo, Energia, Objetivo, Cuadrante)),
+    once(energia_usuario(Energia, EnergiaUsuario)),
+    once(energia_actividad(Actividad, EnergiaActividad)),
+    EnergiaObjetivo is (EnergiaUsuario + EnergiaActividad) / 2,
+    findall(Clave-Cancion,
+            candidata(Cuadrante, Idioma, EnergiaObjetivo, Clave, Cancion),
+            Candidatas),
+    keysort(Candidatas, Ordenadas),
+    pairs_values(Ordenadas, Canciones),
+    length(Resultados, 5),
+    append(Resultados, _, Canciones).
+
+candidata(Cuadrante, Preferencia, EnergiaObjetivo, Distancia-Id, Cancion) :-
+    cancion(Id, Titulo, Artista, Genero, Cuadrante, Nivel, Idioma, URL),
+    coincide_idioma(Preferencia, Idioma),
+    energia_para_orden(Id, Nivel, Energia),
+    Distancia is round(abs(Energia - EnergiaObjetivo) * 1000000),
+    Cancion = cancion{id:Id, titulo:Titulo, artista:Artista, genero:Genero,
+                      cuadrante:Cuadrante, energia:Nivel, idioma:Idioma, url:URL}.
+
+coincide_idioma(ambos, _).
+coincide_idioma(espanol, espanol).
+coincide_idioma(ingles, ingles).
+
+% Las canciones con ficha pública se ordenan mediante un valor de referencia.
+% Sus categorías editoriales se conservan sin métricas de Spotify.
+energia_para_orden(Id, Nivel, Energia) :-
+    (   datos_spotify(Id, Medida, _, _)
+    ->  Energia = Medida
+    ;   energia_editorial(Nivel, Energia)
+    ).
+
+energia_editorial(baja, 0.25).
+energia_editorial(alta, 0.65).
+
+% Pruebas de las consultas
+:- begin_tests(base_musical).
+
+test(catalogo_de_82_pistas_sin_duplicados) :-
+    findall(Id-(Titulo-Artista), cancion(Id, Titulo, Artista, _, _, _, _, _), Pistas),
+    length(Pistas, 82),
+    pairs_keys_values(Pistas, Identificadores, TitulosYArtistas),
+    sort(Identificadores, IdsUnicos),
+    sort(TitulosYArtistas, TitulosUnicos),
+    length(IdsUnicos, 82),
+    length(TitulosUnicos, 82).
+
+test(cuadrantes_y_cobertura_por_idioma) :-
+    forall((member(Cuadrante, [feliz, tranquilo, melancolico, tenso]),
+            member(Idioma, [espanol, ingles])),
+           (aggregate_all(count, cancion(_, _, _, _, Cuadrante, _, Idioma, _), N),
+            assertion(N >= 10))),
+    aggregate_all(count, datos_spotify(_, _, _, _), 80).
+
+test(procedencia_y_coherencia_de_metrica) :-
+    forall(cancion(Id, _, _, _, Cuadrante, Nivel, _, _),
+           verifica_origen(Id, Cuadrante, Nivel)).
+
+test(energia_media_usa_la_activacion_tipica_del_animo) :-
+    findall(Animo-Cuadrante,
+            cuadrante_objetivo(Animo, media, acompanar, Cuadrante),
+            [feliz-feliz, tranquilo-tranquilo, triste-melancolico,
+             nostalgico-melancolico, estresado-tenso, enojado-tenso]).
+
+test(acompanar_responde_a_energia_explicita) :-
+    cuadrante_objetivo(feliz, baja, acompanar, tranquilo),
+    cuadrante_objetivo(triste, alta, acompanar, tenso).
+
+test(cambiar_asciende_o_calma) :-
+    cuadrante_objetivo(triste, baja, cambiar, feliz),
+    cuadrante_objetivo(estresado, alta, cambiar, tranquilo),
+    cuadrante_objetivo(enojado, alta, cambiar, tranquilo).
+
+test(actividad_modifica_el_orden) :-
+    recomendar(feliz, media, acompanar, descansar, ingles, [Descanso|_]),
+    recomendar(feliz, media, acompanar, ejercicio, ingles, [Ejercicio|_]),
+    datos_spotify(Descanso.id, EnergiaDescanso, _, _),
+    datos_spotify(Ejercicio.id, EnergiaEjercicio, _, _),
+    assertion(EnergiaEjercicio > EnergiaDescanso).
+
+test(idioma_ambos) :-
+    recomendar(feliz, alta, acompanar, viaje, ambos, Resultados),
+    length(Resultados, 5),
+    forall(member(R, Resultados), assertion(memberchk(R.idioma, [espanol, ingles]))).
+
+test(rechaza_animo_ajeno_al_dominio, [fail]) :-
+    recomendar(sorprendido, media, acompanar, viaje, ambos, _).
+
+test(rechaza_energia_ajena_al_dominio, [fail]) :-
+    recomendar(feliz, maxima, acompanar, viaje, ambos, _).
+
+test(rechaza_objetivo_ajeno_al_dominio, [fail]) :-
+    recomendar(feliz, media, inventar, viaje, ambos, _).
+
+test(rechaza_actividad_ajena_al_dominio, [fail]) :-
+    recomendar(feliz, media, acompanar, cocinar, ambos, _).
+
+test(rechaza_idioma_ajeno_al_dominio, [fail]) :-
+    recomendar(feliz, media, acompanar, viaje, frances, _).
+
+test(entrada_instanciada, [fail]) :-
+    recomendar(feliz, media, acompanar, viaje, _, _).
+
+test(recomienda_las_dos_de_the_bugambilias) :-
+    aggregate_all(count, cancion(_, _, 'The Bugambilias', _, _, _, espanol, _), 2),
+    recomendar(nostalgico, baja, acompanar, descansar, espanol, ParaDescansar),
+    recomendar(enojado, alta, acompanar, viaje, espanol, ParaViajar),
+    assertion(contiene_titulo(ParaDescansar, 'Magenta')),
+    assertion(contiene_titulo(ParaViajar, 'Escapista de lo evidente')).
+
+test(json_con_titulos_y_metadatos) :-
+    recomendar_json(enojado, alta, acompanar, viaje, espanol, Json),
+    atom_json_dict(Json, Datos, [value_string_as(atom)]),
+    assertion(Datos.cuadrante == tenso),
+    length(Datos.recomendaciones, 5),
+    assertion(contiene_titulo(Datos.recomendaciones, 'Escapista de lo evidente')),
+    forall(member(R, Datos.recomendaciones),
+           assertion(cancion(R.id, R.titulo, R.artista, R.genero,
+                             R.cuadrante, R.energia, R.idioma, R.url))).
+
+test(las_432_combinaciones) :-
+    findall(perfil(A, E, O, C, I), perfil_valido(A, E, O, C, I), Perfiles),
+    length(Perfiles, 432),
+    forall(member(perfil(A, E, O, C, I), Perfiles), verifica_perfil(A, E, O, C, I)).
+
+verifica_origen(Id, Cuadrante, Nivel) :-
+    findall(Tipo-URL, fuente(Id, Tipo, URL), [Tipo-URL]),
+    assertion(sub_atom(URL, 0, _, _, 'https://')),
+    (   Tipo == spotify_dataset
+    ->  once(datos_spotify(Id, Energia, Valencia, Popularidad)),
+        assertion(between(0, 100, Popularidad)),
+        cuadrante_por_valores(Valencia, Energia, Esperado, NivelEsperado),
+        assertion(Cuadrante-Nivel == Esperado-NivelEsperado)
+    ;   assertion(Tipo == ficha_publica),
+        assertion(\+ datos_spotify(Id, _, _, _))
+    ).
+
+cuadrante_por_valores(Valencia, Energia, Cuadrante, Nivel) :-
+    (Energia < 0.5 -> Nivel = baja ; Nivel = alta),
+    (Valencia < 0.5 -> Afinidad = negativa ; Afinidad = positiva),
+    once(member(Afinidad-Nivel-Cuadrante,
+                [positiva-alta-feliz, positiva-baja-tranquilo,
+                 negativa-baja-melancolico, negativa-alta-tenso])).
+
+contiene_titulo(Resultados, Titulo) :-
+    once((member(R, Resultados), R.titulo == Titulo)).
+
+verifica_perfil(A, E, O, C, I) :-
+    findall(Resultados, recomendar(A, E, O, C, I, Resultados), [Resultados]),
+    length(Resultados, 5),
+    findall(Id, (member(R, Resultados), Id = R.id), Ids),
+    sort(Ids, IdsUnicos),
+    length(IdsUnicos, 5),
+    cuadrante_objetivo(A, E, O, Cuadrante),
+    forall(member(R, Resultados),
+           (assertion(R.cuadrante == Cuadrante),
+            assertion((I == ambos ; R.idioma == I)))).
+
+:- end_tests(base_musical).
