@@ -21,6 +21,12 @@ Recomendador de canciones según el estado de ánimo. El usuario contesta unas p
 - [SWI-Prolog](https://www.swi-prolog.org/download/stable) (en Windows, marcar la opción de agregarlo al PATH)
 - Una API key de [Google AI Studio](https://aistudio.google.com/apikey)
 
+Para revisar que SWI-Prolog esté en el PATH, abrir una terminal nueva y ejecutar:
+```
+swipl --version
+```
+Si marca error, ver [Solución de problemas](#solución-de-problemas).
+
 ## Instalación
 
 1. Clonar el repositorio:
@@ -50,4 +56,33 @@ swipl -g run_tests -t halt pruebas.pl
 Ejecutar la aplicación:
 ```
 streamlit run app.py
+```
+
+## Solución de problemas
+
+### "swipl no se reconoce como nombre de un cmdlet"
+
+SWI-Prolog no está en el PATH. En PowerShell:
+
+1. Revisar si está instalado:
+   ```powershell
+   Test-Path "C:\Program Files\swipl\bin\swipl.exe"
+   ```
+
+2. Si responde `True`, agregarlo al PATH:
+   ```powershell
+   [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";C:\Program Files\swipl\bin", "User")
+   ```
+   Cerrar la terminal, abrir una nueva y probar `swipl --version`.
+
+3. Si responde `False`, buscar dónde quedó instalado:
+   ```powershell
+   Get-ChildItem "C:\Program Files*" -Recurse -Filter swipl.exe -ErrorAction SilentlyContinue | Select-Object FullName
+   ```
+   Si aparece una ruta, usar esa carpeta (la que termina en `\bin`) en el paso 2. Si no aparece nada, instalar SWI-Prolog y marcar la opción de agregarlo al PATH.
+
+### Revisar que Python encuentre Prolog
+
+```
+python -c "from pyswip import Prolog; print('pyswip OK')"
 ```
