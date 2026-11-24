@@ -31,18 +31,31 @@ Si marca error, ver [Solución de problemas](#solución-de-problemas).
 
 1. Clonar el repositorio:
    ```
-   git clone https://github.com/SebasR0R/prolog_proyecto.git
-   cd prolog_proyecto
+   git clone https://github.com/kr-zvr/musical_reco.git
+   cd musical_reco
    ```
 
-2. Instalar las librerías:
+2. Crear y activar un entorno virtual:
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+   Debe aparecer `(venv)` al inicio de la línea. Hay que activarlo cada vez que se trabaje en el proyecto.
+
+   Si marca que "la ejecución de scripts está deshabilitada", ejecutar una vez:
+   ```powershell
+   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+   ```
+
+3. Instalar las librerías:
    ```
    pip install -r requirements.txt
    ```
 
-3. Copiar `.env.example`, renombrarlo a `.env` y pegar la API key:
+4. Copiar `.env.example`, renombrarlo a `.env` y pegar la API key:
    ```
    GEMINI_API_KEY=tu_clave_aqui
+   GEMINI_MODEL=gemini-3.5-flash-lite
    ```
 
 ## Uso
@@ -81,8 +94,10 @@ SWI-Prolog no está en el PATH. En PowerShell:
    ```
    Si aparece una ruta, usar esa carpeta (la que termina en `\bin`) en el paso 2. Si no aparece nada, instalar SWI-Prolog y marcar la opción de agregarlo al PATH.
 
-### Revisar que Python encuentre Prolog
+### Revisar que las librerías estén instaladas
 
+Con el entorno virtual activo:
 ```
+python -c "import streamlit, pyswip, requests, dotenv; print('Todo instalado')"
 python -c "from pyswip import Prolog; print('pyswip OK')"
 ```
