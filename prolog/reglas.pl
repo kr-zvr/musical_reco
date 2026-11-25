@@ -1,6 +1,10 @@
 :- encoding(utf8).
 :- ensure_loaded(canciones).
-:- use_module(library(json)).
+:- if(exists_source(library(json))).
+:- use_module(library(json)).          % SWI-Prolog 9.3 o más nuevo
+:- else.
+:- use_module(library(http/json)).     % Versiones anteriores
+:- endif.
 :- use_module(library(uri)).
 :- use_module(library(pairs)).
 
