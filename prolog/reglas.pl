@@ -1,6 +1,6 @@
 :- encoding(utf8).
 :- ensure_loaded(canciones).
-:- use_module(library(http/json)).
+:- use_module(library(json)).
 :- use_module(library(uri)).
 :- use_module(library(pairs)).
 
