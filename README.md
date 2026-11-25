@@ -6,7 +6,7 @@ Recomendador de canciones según el estado de ánimo. El usuario contesta unas p
 
 ```
 ├── app.py              Interfaz en Streamlit
-├── recomendador.py     Conexión con Prolog y Gemini
+├── recomendador.py     Conexión con Prolog (vía swipl) y Gemini
 ├── prolog/
 │   ├── canciones.pl    Base de conocimiento (80 canciones)
 │   ├── reglas.pl       Reglas de recomendación
@@ -117,10 +117,13 @@ SWI-Prolog no está en el PATH. En PowerShell:
    ```
    Si aparece una ruta, usar esa carpeta (la que termina en `\bin`) en el paso 2. Si no aparece nada, instalar SWI-Prolog y marcar la opción de agregarlo al PATH.
 
+### La app dice "No se encontró swipl"
+
+La terminal se abrió antes de agregar SWI-Prolog al PATH y no ve el cambio. Cerrar VS Code por completo (no solo la terminal), volver a abrirlo y probar `swipl --version` en una terminal nueva.
+
 ### Revisar que las librerías estén instaladas
 
 Con el entorno virtual activo:
 ```
-python -c "import streamlit, pyswip, requests, dotenv; print('Todo instalado')"
-python -c "from pyswip import Prolog; print('pyswip OK')"
+python -c "import streamlit, requests, dotenv; print('Todo instalado')"
 ```
