@@ -173,14 +173,24 @@ recomendar_json(Animo, Energia, Objetivo, Actividad, Idioma, Genero, Json) :-
     findall(Ficha,
             ( member(T, Titulos), ficha(T, EnergiaBuscada, Genero, Ficha) ),
             Fichas),
-    atom_json_dict(Json, _{cuadrante:Cuadrante, recomendaciones:Fichas}, [width(0)]).
+    findall(Punto, punto_mapa(Punto), Mapa),
+    atom_json_dict(Json,
+                   _{cuadrante:Cuadrante, energia_buscada:EnergiaBuscada,
+                     recomendaciones:Fichas, mapa:Mapa},
+                   [width(0)]).
 
 ficha(Titulo, EnergiaBuscada, PrefGenero,
       _{titulo:Titulo, artista:Artista, genero:Genero, idioma:Idioma,
-        url:URL, explicacion:Explicacion}) :-
+        energia:Energia, valencia:Valencia, url:URL, explicacion:Explicacion}) :-
     cancion(Titulo, Artista, Genero, Idioma),
+    medida(Titulo, Energia, Valencia),
     enlace(Titulo, URL),
     explicacion(Titulo, EnergiaBuscada, PrefGenero, Explicacion).
+
+% punto_mapa: energía y valencia de cada canción, para la gráfica de la página.
+punto_mapa(_{titulo:Titulo, energia:Energia, valencia:Valencia}) :-
+    cancion(Titulo, _, _, _),
+    medida(Titulo, Energia, Valencia).
 
 % enlace(Titulo, URL): búsqueda de YouTube con el título y el artista.
 enlace(Titulo, URL) :-

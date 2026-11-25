@@ -1,0 +1,33 @@
+[client]
+# Oculta el botón "Deploy" y deja el menú con el selector de tema
+toolbarMode = "viewer"
+
+[theme]
+font = "sans-serif"
+baseRadius = "medium"
+
+# --- Modo claro
+[theme.light]
+primaryColor = "#1E6B45"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#E8F0EA"
+textColor = "#16281F"
+linkColor = "#1E6B45"
+borderColor = "#CFDDD3"
+
+[theme.light.sidebar]
+backgroundColor = "#E8F0EA"
+secondaryBackgroundColor = "#FFFFFF"
+
+# --- Modo oscuro
+[theme.dark]
+primaryColor = "#3E9E6A"
+backgroundColor = "#0E1A13"
+secondaryBackgroundColor = "#17291F"
+textColor = "#E3EEE7"
+linkColor = "#6CC495"
+borderColor = "#25402F"
+
+[theme.dark.sidebar]
+backgroundColor = "#122219"
+secondaryBackgroundColor = "#1B3024"

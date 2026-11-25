@@ -124,7 +124,9 @@ def recomendar(respuestas):
 
     resultado = {
         "cuadrante": prolog_datos["cuadrante"],
+        "energia_buscada": prolog_datos["energia_buscada"],
         "canciones": prolog_datos["recomendaciones"],
+        "mapa": prolog_datos["mapa"],
         "mensaje": None,
         "sugerencias_ia": None,
         "aviso": None,
