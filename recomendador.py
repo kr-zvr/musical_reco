@@ -46,17 +46,6 @@ TEXTOS = {
 }
 
 
-# Mensajes por si Gemini no responde
-MENSAJES_RESPALDO = {
-    "feliz": "¡Qué bueno que te sientes así! Aquí tienes música para seguir con esa energía.",
-    "tranquilo": "Disfruta ese momento de calma, te lo mereces.",
-    "triste": "Está bien no estar bien. Date tu tiempo, esto también va a pasar.",
-    "nostalgico": "Recordar también es una forma de querer. Deja que la música te acompañe.",
-    "estresado": "Respira hondo, una cosa a la vez. Ya estás haciendo lo que puedes.",
-    "enojado": "Es válido sentirte así. Saca esa energía y luego date un respiro.",
-}
-
-
 def texto(valor):
     return TEXTOS.get(valor, valor)
 
@@ -118,7 +107,7 @@ def recomendar(respuestas):
     resultado = {
         "cuadrante": prolog_datos["cuadrante"],
         "canciones": prolog_datos["recomendaciones"],
-        "mensaje": MENSAJES_RESPALDO[respuestas["animo"]],
+        "mensaje": None,
         "sugerencias_ia": None,
         "aviso": None,
         "tiempo_ia": None,
@@ -158,8 +147,9 @@ if __name__ == "__main__":
     }
     resultado = recomendar(respuestas)
 
-    print(resultado["mensaje"])
-    print("\nCuadrante:", resultado["cuadrante"])
+    if resultado["mensaje"]:
+        print(resultado["mensaje"] + "\n")
+    print("Cuadrante:", resultado["cuadrante"])
     print("\nDe la base de conocimiento:")
     for cancion in resultado["canciones"]:
         print(f"- {cancion['titulo']} - {cancion['artista']}")

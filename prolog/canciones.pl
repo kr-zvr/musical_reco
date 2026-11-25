@@ -4,8 +4,7 @@
 %   - Energía y valencia: Spotify Tracks Dataset (Hugging Face),
 %     https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset
 %   - Contraste puntual de etiquetas: Last.fm, https://www.last.fm
-%   - Las dos canciones de The Bugambilias no están en el dataset;
-%     se clasificaron a criterio del equipo (ver clasificacion_editorial/3).
+
 %
 % El cuadrante de cada canción NO se escribe a mano: lo calcula la regla
 % clasificacion/3 (en reglas.pl) a partir de su energía y valencia,
@@ -50,7 +49,6 @@ cancion('Diazepam', 'Leiva / Natalia Lafourcade', pop_rock, espanol).
 cancion('nana triste', 'Natalia Lacunza / Guitarricadelafuente', indie, espanol).
 cancion('Solamente tú', 'Pablo Alborán', pop, espanol).
 cancion('Como Antes', 'Rels B', pop_urbano, espanol).
-cancion('Magenta', 'The Bugambilias', pop_rock, espanol).
 
 % Melancólicas en inglés
 cancion('Someone Like You', 'Adele', pop, ingles).
@@ -75,7 +73,6 @@ cancion('Saturno', 'Pablo Alborán', pop, espanol).
 cancion('Hasta Que Te Conocí', 'Panteón Rococó / Santa Fe Klan', ska, espanol).
 cancion('PUNTO 40', 'Rauw Alejandro / Baby Rasta', reggaeton, espanol).
 cancion('Lo Siento BB:/', 'Tainy / Bad Bunny / Julieta Venegas', reggaeton, espanol).
-cancion('Escapista de lo evidente', 'The Bugambilias', pop_rock, espanol).
 
 % Tensas en inglés
 cancion('You Oughta Know', 'Alanis Morissette', rock_alternativo, ingles).
@@ -196,12 +193,6 @@ medida('Cherish the Day', 0.389, 0.68).
 medida('Michelle', 0.29, 0.666).
 medida('My Girl', 0.418, 0.694).
 
-% clasificacion_editorial(Titulo, Cuadrante, Energia).
-% Canciones sin medida en el dataset, clasificadas por el equipo.
-% El cuadrante de Magenta es provisional.
-clasificacion_editorial('Magenta', melancolico, baja).
-clasificacion_editorial('Escapista de lo evidente', tenso, alta).
-
 % familia(Genero, Familia).
 % Agrupa los géneros en las familias que se le ofrecen al usuario.
 % Un género puede pertenecer a dos familias (por ejemplo, pop_rock).
@@ -224,15 +215,3 @@ familia(funk, baile).
 familia(soul, soul_jazz).
 familia(jazz, soul_jazz).
 familia(cantautor, cantautor).
-
-% contrastada_lastfm(Titulo).
-% Canciones cuya clasificación se revisó contra su ficha o etiquetas en Last.fm.
-contrastada_lastfm('Gasolina').
-contrastada_lastfm('Dancing Queen').
-contrastada_lastfm('nana triste').
-contrastada_lastfm('Someone Like You').
-contrastada_lastfm('No Surprises').
-contrastada_lastfm('You Oughta Know').
-contrastada_lastfm('I Hate Everything About You').
-contrastada_lastfm('Agua').
-contrastada_lastfm('Cherish the Day').

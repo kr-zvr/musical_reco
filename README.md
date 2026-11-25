@@ -8,7 +8,7 @@ Recomendador de canciones según el estado de ánimo. El usuario contesta unas p
 ├── app.py              Interfaz en Streamlit
 ├── recomendador.py     Conexión con Prolog y Gemini
 ├── prolog/
-│   ├── canciones.pl    Base de conocimiento (82 canciones)
+│   ├── canciones.pl    Base de conocimiento (80 canciones)
 │   ├── reglas.pl       Reglas de recomendación
 │   └── pruebas.pl      Pruebas de la base
 ├── .env.example        Plantilla de credenciales
