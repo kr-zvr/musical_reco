@@ -1,9 +1,8 @@
-% Base de conocimiento: 82 canciones clasificadas por estado de ánimo.
+% Base de conocimiento: 80 canciones clasificadas por estado de ánimo.
 %
 % Fuentes
 %   - Energía y valencia: Spotify Tracks Dataset (Hugging Face),
 %     https://huggingface.co/datasets/maharshipandya/spotify-tracks-dataset
-%   - Contraste puntual de etiquetas: Last.fm, https://www.last.fm
 
 %
 % El cuadrante de cada canción NO se escribe a mano: lo calcula la regla
