@@ -1,36 +1,44 @@
 import json
 import os
+import requests
 import time
 from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
-from pyswip import Prolog
+import subprocess
 
 load_dotenv()
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-MODELO = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODELO}:generateContent"
+modelo = os.getenv("GEMINI_MODEL")
+key = os.getenv("GEMINI_API_KEY")
+URL = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
 
 # Ruta a las reglas de Prolog, sin importar desde dónde se ejecute el script
 REGLAS = Path(__file__).parent / "prolog" / "reglas.pl"
 
-prolog = Prolog()
-prolog.consult(REGLAS.as_posix())
 
 
 def consultar_prolog(respuestas):
-    """Pregunta a Prolog y regresa el cuadrante y las 5 canciones."""
-    consulta = (
+    """Pregunta a Prolog (llamando a swipl) y regresa el cuadrante y las 5 canciones."""
+    meta = (
+        f"consult('{REGLAS.as_posix()}'), "
         f"recomendar_json({respuestas['animo']}, {respuestas['energia']}, "
         f"{respuestas['objetivo']}, {respuestas['actividad']}, "
-        f"{respuestas['idioma']}, Json)"
+        f"{respuestas['idioma']}, Json), "
+        "write(Json), nl"
     )
-    resultado = list(prolog.query(consulta, maxresult=1))
-    if not resultado:
+    try:
+        proceso = subprocess.run(
+            ["swipl", "-q", "-g", meta, "-t", "halt"],
+            capture_output=True, text=True, encoding="utf-8", timeout=30,
+        )
+    except FileNotFoundError:
+        raise RuntimeError("No se encontró swipl. Instala SWI-Prolog y agrégalo al PATH.")
+    salida = proceso.stdout.strip()
+    if proceso.returncode != 0 or not salida:
         return None
-    return json.loads(resultado[0]["Json"])
+    return json.loads(salida)
 
 
 # Cómo se escribe cada respuesta en el prompt (Prolog no usa acentos)
@@ -77,7 +85,7 @@ def consultar_gemini(respuestas, canciones):
         "contents": [{"parts": [{"text": armar_prompt(respuestas, canciones)}]}],
         "generationConfig": {"responseMimeType": "application/json"},  # Pide JSON
     }
-    encabezados = {"x-goog-api-key": API_KEY, "Content-Type": "application/json"}
+    encabezados = {"x-goog-api-key": key, "Content-Type": "application/json"}
 
     inicio = time.perf_counter()
     respuesta = requests.post(URL, headers=encabezados, json=cuerpo, timeout=30)
