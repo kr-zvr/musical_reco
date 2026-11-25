@@ -40,6 +40,15 @@ ACTIVIDADES = {
     "Descansar": "descansar",
 }
 IDIOMAS = {"Español": "espanol", "Inglés": "ingles", "Ambos": "ambos"}
+GENEROS = {
+    "Cualquiera": "cualquiera",
+    "Pop": "pop",
+    "Rock": "rock",
+    "Urbano (reggaetón, hip hop)": "urbano",
+    "Para bailar (disco, funk)": "baile",
+    "Soul y jazz": "soul_jazz",
+    "Cantautor": "cantautor",
+}
 
 CUADRANTES = {
     "feliz": "Feliz y enérgico",
@@ -60,6 +69,7 @@ with st.form("preguntas"):
     objetivo = st.radio("¿Qué quieres que haga la música?", list(OBJETIVOS))
     actividad = st.selectbox("¿Qué vas a hacer?", list(ACTIVIDADES))
     idioma = st.radio("¿En qué idioma?", list(IDIOMAS), horizontal=True)
+    genero = st.selectbox("¿Qué tipo de música prefieres?", list(GENEROS))
     enviar = st.form_submit_button("Recomiéndame música", type="primary")
 
 if enviar:
@@ -69,6 +79,7 @@ if enviar:
         "objetivo": OBJETIVOS[objetivo],
         "actividad": ACTIVIDADES[actividad],
         "idioma": IDIOMAS[idioma],
+        "genero": GENEROS[genero],
     }
 
     with st.spinner("Buscando canciones para ti..."):
@@ -83,10 +94,16 @@ if enviar:
 
     st.subheader("Canciones para ti")
     st.caption(f"Cuadrante: {CUADRANTES.get(resultado['cuadrante'], resultado['cuadrante'])}")
+    total = len(resultado["canciones"])
+    if total == 0:
+        st.info(f"No hay canciones de {genero} para este ánimo en la base de conocimiento.")
+    elif total < 5:
+        st.info(f"Solo hay {total} canciones de {genero} para este ánimo en la base de conocimiento.")
     for i, c in enumerate(resultado["canciones"], start=1):
         with st.container(border=True):
             st.markdown(f"**{i}. {c['titulo']}**  \n{c['artista']}")
             st.caption(f"{c['genero'].replace('_', ' ').title()} · {c['idioma']}")
+            st.write(c["explicacion"])
             st.link_button("▶ Escuchar en YouTube", c["url"])
 
     st.subheader("Sugerencias de la IA")

@@ -1,16 +1,15 @@
 import json
 import os
-import requests
+import subprocess
 import time
 from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
-import subprocess
 
 load_dotenv()
 
-modelo = os.getenv("GEMINI_MODEL")
+modelo = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 key = os.getenv("GEMINI_API_KEY")
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
 
@@ -22,10 +21,11 @@ REGLAS = Path(__file__).parent / "prolog" / "reglas.pl"
 def consultar_prolog(respuestas):
     """Pregunta a Prolog (llamando a swipl) y regresa el cuadrante y las 5 canciones."""
     meta = (
+        "set_stream(user_output, encoding(utf8)), "  # Para que los acentos lleguen bien
         f"consult('{REGLAS.as_posix()}'), "
         f"recomendar_json({respuestas['animo']}, {respuestas['energia']}, "
         f"{respuestas['objetivo']}, {respuestas['actividad']}, "
-        f"{respuestas['idioma']}, Json), "
+        f"{respuestas['idioma']}, {respuestas['genero']}, Json), "
         "write(Json), nl"
     )
     try:
@@ -51,6 +51,9 @@ TEXTOS = {
     "espanol": "español",
     "ingles": "inglés",
     "ambos": "español o inglés",
+    "urbano": "urbano (reggaetón, hip hop)",
+    "baile": "bailable (disco, funk)",
+    "soul_jazz": "soul o jazz",
 }
 
 
@@ -59,20 +62,27 @@ def texto(valor):
 
 
 def armar_prompt(respuestas, canciones):
-    """Arma el mensaje para Gemini con el ánimo y las 5 canciones de Prolog."""
+    """Arma el mensaje para Gemini con el ánimo y las canciones de Prolog."""
     animo, energia, objetivo, actividad, idioma = (
         texto(respuestas[c]) for c in ("animo", "energia", "objetivo", "actividad", "idioma")
     )
     lista = "\n".join(f"- {c['titulo']} - {c['artista']}" for c in canciones)
+    if not lista:
+        lista = "(ninguna, no hubo canciones de la base para este caso)"
+    genero = ""
+    del_genero = ""
+    if respuestas["genero"] != "cualquiera":
+        genero = f" Le gusta el género {texto(respuestas['genero'])}."
+        del_genero = f" del género {texto(respuestas['genero'])}"
     return (
         "Eres un recomendador de música cálido y cercano. Responde en español.\n\n"
         f"La persona se siente {animo}, tiene energía {energia}, "
         f"quiere {objetivo} su ánimo, va a {actividad} "
-        f"y prefiere canciones en {idioma}.\n\n"
+        f"y prefiere canciones en {idioma}.{genero}\n\n"
         f"Ya se le recomendaron estas canciones:\n{lista}\n\n"
         "1. Escribe un mensaje breve (1 o 2 oraciones) para la persona según cómo se siente: "
         "si está mal, dale ánimos; si está bien, celebra con ella. Háblale de tú.\n"
-        "2. Sugiere 3 canciones adicionales que encajen con ese estado de ánimo. "
+        f"2. Sugiere 3 canciones adicionales{del_genero} que encajen con ese estado de ánimo. "
         "Solo canciones reales y muy conocidas, sin repetir las de la lista.\n\n"
         "Responde solo con un JSON con esta forma:\n"
         '{"mensaje": "...", "canciones": [{"titulo": "...", "artista": "...", "razon": "..."}]}'
@@ -152,6 +162,7 @@ if __name__ == "__main__":
         "objetivo": "acompanar",
         "actividad": "descansar",
         "idioma": "espanol",
+        "genero": "rock",
     }
     resultado = recomendar(respuestas)
 
@@ -161,6 +172,7 @@ if __name__ == "__main__":
     print("\nDe la base de conocimiento:")
     for cancion in resultado["canciones"]:
         print(f"- {cancion['titulo']} - {cancion['artista']}")
+        print(f"  {cancion['explicacion']}")
 
     print("\nSugerencias de la IA:")
     if resultado["aviso"]:
